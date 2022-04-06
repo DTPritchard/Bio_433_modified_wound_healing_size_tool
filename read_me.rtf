@@ -1,0 +1,42 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2636
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww27320\viewh14060\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs32 \cf2 \expnd0\expndtw0\kerning0
+Bio_433_modified_wound_healing_size_tool_read_me_file\
+\
+Github repository that contains: \
+	\
+	A: DTP-Modified_Wound_healing_size_tool_updated.ijm: The modified Wound_healing_size_tool. \
+	Instructions to install the plug-in: \
+		1. Open ImageJ and open any image\
+		2. Select Plugins -> Macros -> Install -> [Select \'93DTP-Modified_Wound_healing_size_tool_updated.ijm\'94]\
+		3. 6 new buttons should load into the tool bar. \
+	Instructions on each tool: \
+		1. Wound Size Analysis | Process Single Image Tool: \
+			Open your desired image to analyze, select this button, then click on the opened image. Follow the dialog boxes. \
+		2. Wound Size Analysis | Process Multiple Images Tool: \
+			Select this button, open the desired directory, follow the dialog boxes. \
+			Note - \'93Apply these settings to the rest of the images\'94 will use the same parameters on all the images in the directory - this allows for rapid batch processing. \
+		3. Wound healing size Manual Tool: \
+			An artifact from Suarez-Arendo et al. (2020). Allows area measurement of manual tracing for an individual image. \
+		4. Rotate 90 degrees tool: \
+			Rotates the image 90 degrees in imageJ - needed in case the gap is horizontal. \
+		5. Save Results as CSV Tool: \
+			Saves the results table as a CSV file in the directory of your choice. Use this after using tools 1 or 2. \
+		6. Save Annotated Images Tool: \
+			This saves all opened images in ImageJ. Use this after using tools 1 or 2 in order to saved all annotated images to a directory of your choice. \
+	\
+	B: 3R-Temperature-L-LactateAnalysis.Rmd: \
+		An R markdown file containing the data analysis procedure for RTgutGC cell migration in sodium L-lactate (from figure 7). \
+	C: DemoSet_RTgutGC.zip: \
+		Contains an image set of RTgutGC cells on day 0 of a cell migration experiment. Load these into ImageJ to test the modified Wound_healing_size_tool. \
+	D: L-lactate_wound_healing_analysis.pdf: \
+		Contain the knitted PDF file of 3R-Temperature-L-LactateAnalysis.Rmd\
+	E: L-lactate_wound_healing_analysis_data_files.zip: \
+		Contains the CSV input files for 3R-Temperature-L-LactateAnalysis.Rmd\
+}
