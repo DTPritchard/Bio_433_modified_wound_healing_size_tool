@@ -1,0 +1,154 @@
+---
+title: "L-lactate_Wound_Healing_Analysis"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import Packages
+
+```{r install gdata}
+
+#install.packages("gdata")
+#install.packages("cowplot")
+#install.packages("gridExtra")
+#install.packages("lemon")
+
+
+
+
+
+```
+
+## Import Libraries
+
+```{r import_libraries, include=TRUE}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(gdata)
+library(cowplot)
+library(grid)
+library(gridExtra)
+library(lemon)
+```
+## Import CSV Files
+
+```{r import_imageJ_CSV, include=TRUE}
+imagej_wound_size_day_0 <- read.csv('Results_Day_0.csv', header=TRUE,sep = ",")
+imagej_wound_size_day_1 <- read.csv('Results_Day_1.csv', header=TRUE,sep = ",")
+imagej_wound_size_day_2 <- read.csv('Results_Day_2.csv', header=TRUE,sep = ",")
+
+```
+
+
+## Data Labelling and Calculating Percent Migration
+
+```{r data_manipulation_imageJ, include=TRUE}
+
+#Modifying "Day 0" ImageJ Data
+
+imagej_wound_size_day_0_modified <- imagej_wound_size_day_0 %>%
+  mutate(time_day=c("Day 0"),.after=Label) %>%
+  mutate(Treatment=c(rep("0",8),rep("0.1",8),rep("1",8),rep("10",8)),.after=time_day) %>%
+  mutate(percent_migration = (abs(imagej_wound_size_day_0$Area.mm.2-imagej_wound_size_day_0$Area.mm.2)/imagej_wound_size_day_0$Area.mm.2)*100)
+
+imagej_wound_size_day_0_grouped <- group_by(imagej_wound_size_day_0_modified, Treatment)
+imagej_wound_size_day_0_aggregated <- summarise(imagej_wound_size_day_0_grouped, Average_Percent_Migration=mean(percent_migration), sd=sd(percent_migration))
+
+
+#Modifying "Day 1" ImageJ Data
+
+imagej_wound_size_day_1_modified <- imagej_wound_size_day_1 %>%
+  mutate(time_day=c("Day 1"),.after=Label) %>%
+  mutate(Treatment=c(rep("0",8),rep("0.1",8),rep("1",8),rep("10",8)),.after=time_day) %>%
+  mutate(percent_migration = (abs(imagej_wound_size_day_1$Area.mm.2-imagej_wound_size_day_0$Area.mm.2)/imagej_wound_size_day_0$Area.mm.2)*100)
+
+imagej_wound_size_day_1_grouped <- group_by(imagej_wound_size_day_1_modified, Treatment)
+imagej_wound_size_day_1_aggregated <- summarise(imagej_wound_size_day_1_grouped, Average_Percent_Migration=mean(percent_migration), sd=sd(percent_migration))
+
+#Modifying "Day 2" ImageJ Data
+
+imagej_wound_size_day_2_modified <- imagej_wound_size_day_2 %>%
+  mutate(time_day=c("Day 2"),.after=Label) %>%
+  mutate(Treatment=c(rep("0",8),rep("0.1",8),rep("1",8),rep("10",8)),.after=time_day) %>%
+  mutate(percent_migration = (abs(imagej_wound_size_day_2$Area.mm.2-imagej_wound_size_day_0$Area.mm.2)/imagej_wound_size_day_0$Area.mm.2)*100)
+
+imagej_wound_size_day_2_grouped <- group_by(imagej_wound_size_day_2_modified, Treatment)
+imagej_wound_size_day_2_aggregated <- summarise(imagej_wound_size_day_2_grouped, Average_Percent_Migration=mean(percent_migration), sd=sd(percent_migration))
+
+```
+
+## Combining the Data Frames and Preparing for Scatterplot
+
+
+```{r scatter_plot_data_prep, include=TRUE}
+
+wound_size_scatterplot_data <- rbind(imagej_wound_size_day_0_aggregated,imagej_wound_size_day_1_aggregated,imagej_wound_size_day_2_aggregated)
+
+wound_size_scatterplot_data_days <- wound_size_scatterplot_data %>%
+    mutate(time_day=c(rep("Day 0", 4),rep("Day 1", 4), rep("Day 2", 4)) ,.before=Treatment)
+
+
+```
+
+## Create Scatterplot
+
+```{r scatter_plot, include=TRUE}
+
+lactate_scatterPlot_B <- ggplot(wound_size_scatterplot_data_days, aes(x = time_day, y= Average_Percent_Migration, col = Treatment)) +
+    geom_line(aes(group = Treatment)) +  
+    geom_point() +
+    geom_errorbar(aes(ymin=Average_Percent_Migration-sd, ymax=Average_Percent_Migration+sd), width=.1,
+                 position=position_dodge(0.01)) +
+    theme_classic() + #classic theme has the white background with black axis titles +
+    scale_color_manual(values=c('#969696','#fecc5c','#fd8d3c','#e31a1c')) +
+    ggtitle('') + #plot title
+    xlab('Time') + #X-axis title
+    ylab('Average Percent Migration') + #Y-axis title
+    labs(colour="Sodium L-Lactate Concentration (mM)") + #Legend title
+    theme(legend.position="bottom") +
+    theme(plot.title = element_text(face="bold", size = rel(2.0))) + #Format the plot title with bold and increased size
+    scale_x_discrete(expand = c(0, .1))
+
+lactate_scatterPlot_B
+
+
+```
+
+## Save Scatterplot
+
+
+```{r save, include=TRUE}
+
+lactate_scatterPlot_B
+ggsave("lactate_scatterPlot_B.png", plot= lactate_scatterPlot_B, width = 30, height = 20, units = "cm")
+
+
+```
+
+
+
+
+```{r old_colors, include=FALSE}
+
+ggplot(wound_size_scatterplot_data_days, aes(x = time_day, y= Average_Percent_Migration, col = Treatment)) +
+    geom_line(aes(group = Treatment)) +  
+    geom_point() +
+    geom_errorbar(aes(ymin=Average_Percent_Migration-sd, ymax=Average_Percent_Migration+sd), width=.1,
+                 position=position_dodge(0.01)) +
+    theme_classic() + #classic theme has the white background with black axis titles +
+    scale_color_manual(values=c('#969696','#b2e2e2','#66c2a4','#238b45')) +
+    ggtitle('Wound Healing Scatterplot') + #plot title
+    xlab('Time') + #X-axis title
+    ylab('Average Percent Migration') + #Y-axis title
+    labs(colour="Sodium Butyrate Concentration") + #Legend title
+    theme(plot.title = element_text(face="bold", size = rel(2.0))) + #Format the plot title with bold and increased size
+    labs(caption = "Figure 1: Gene length is increasing with exon number.") + #Adding the figure title
+    theme(plot.caption = element_text(hjust = 0, size= rel(1.0))) #Format the figure title to adjust to left side of the plot
+
+
+```
+
